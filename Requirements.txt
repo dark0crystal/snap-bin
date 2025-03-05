@@ -7,5 +7,12 @@ Snap Bin Requrements:
 2-No Login is required, use the user IP to store his information temporery
 
 
+🛠 Steps to Integrate TensorFlow.js:
+1.Install TensorFlow.js & CocoSSD
+2.Load the Model
+3.Run Detection on the Captured Image
+4.Display Detected Items
+
+
 
 

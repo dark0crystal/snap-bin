@@ -1,31 +1,61 @@
-// To integrate TensorFlow.js for object detection in your Snap Bin app, we'll use the CocoSSD model (a lightweight, pre-trained model for detecting objects like bins, bottles, and trash).
-
 'use client';
 
 import Image from "next/image";
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
+import * as tf from "@tensorflow/tfjs";
+import * as cocoSsd from "@tensorflow-models/coco-ssd";
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
   const [image, setImage] = useState<string | null>(null);
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
+  const [detectedItems, setDetectedItems] = useState<string[]>([]);
+  const [loading, setLoading] = useState(false);
 
-  const capture = () => {
+  useEffect(() => {
+    tf.ready().then(() => {
+      console.log("TensorFlow.js is ready.");
+    });
+  }, []);
+
+  const capture = async () => {
     if (webcamRef.current) {
       const screenshot = webcamRef.current.getScreenshot();
       if (screenshot) {
         setImage(screenshot);
         fetch(screenshot)
-          .then(res => res.blob())  // Convert base64 to Blob
+          .then(res => res.blob()) // Convert base64 to Blob
           .then(blob => setImageBlob(blob));
+
+        // Process the image with ML
+        await detectObjects(screenshot);
       }
     }
+  };
+
+  const detectObjects = async (imageSrc: string) => {
+    setLoading(true);
+    const img = new window.Image(); // Use 'window.Image' to refer to the native Image constructor
+
+    img.src = imageSrc;
+    img.crossOrigin = "anonymous"; // Prevent CORS issues
+
+    img.onload = async () => {
+      const model = await cocoSsd.load(); // Load COCO-SSD model
+      const predictions = await model.detect(img); // Run detection
+
+      // Extract object names
+      const items = predictions.map(prediction => prediction.class);
+      setDetectedItems(items);
+      setLoading(false);
+    };
   };
 
   const retakePhoto = () => {
     setImage(null);
     setImageBlob(null);
+    setDetectedItems([]);
   };
 
   return (
@@ -54,6 +84,19 @@ export default function Detect() {
               >
                 Retake Photo
               </button>
+
+              {/* Show detected objects */}
+              <div className="text-center mt-4">
+                {loading ? (
+                  <p className="text-gray-600">Processing image...</p>
+                ) : (
+                  detectedItems.length > 0 ? (
+                    <p className="text-green-600">Detected: {detectedItems.join(", ")}</p>
+                  ) : (
+                    <p className="text-gray-600">No objects detected.</p>
+                  )
+                )}
+              </div>
 
               {/* Allow user to download image */}
               {imageBlob && (
