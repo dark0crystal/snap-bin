@@ -6,3 +6,6 @@ Snap Bin Requrements:
 ----All Offers are stored in the database as row : The row is consist of columns [offerId , offerSourceName , location ]
 2-No Login is required, use the user IP to store his information temporery
 
+
+
+
