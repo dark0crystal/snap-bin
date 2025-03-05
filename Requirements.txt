@@ -1,1 +1,5 @@
 Snap Bin Requrements:
+
+
+1-Track the user Location , and according to that location deside what to show to the user.
+2-No Login is required, use the user IP to store his information temporery
