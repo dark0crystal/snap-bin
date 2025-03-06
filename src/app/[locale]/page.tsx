@@ -26,7 +26,7 @@ export default function HomePage() {
         >
           <defs>
             <linearGradient id="waveGradientTop" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" style={{ stopColor: "#7546ff", stopOpacity: 1 }} />
+              <stop offset="0%" style={{ stopColor: "#2658bb", stopOpacity: 1 }} />
               <stop offset="100%" style={{ stopColor: "#f8fe23", stopOpacity: 1 }} />
             </linearGradient>
           </defs>
@@ -75,7 +75,7 @@ export default function HomePage() {
       >
         <defs>
           <linearGradient id="waveGradientBottom" x1="0%" y1="0%" x2="100%" y2="100%">
-            <stop offset="0%" style={{ stopColor: "#7546ff", stopOpacity: 1 }} />
+            <stop offset="0%" style={{ stopColor: "#2658bb", stopOpacity: 1 }} />
             <stop offset="100%" style={{ stopColor: "#f8fe23", stopOpacity: 1 }} />
           </linearGradient>
         </defs>
