@@ -59,11 +59,25 @@ export default function Detect() {
       setLoading(false);
 
       // Logic to check if conditions are met
-      const hasHand = items.includes("hand") || items.includes("finger");
-      const hasTrashBin = items.includes("trash bin") || items.includes("bin");
+      const hasTrashBin = items.includes("trash bin") || 
+      items.includes("bin") || 
+      items.includes("trash can") || 
+      items.includes("garbage bin") || 
+      items.includes("garbage can") || 
+      items.includes("waste bin") || 
+      items.includes("waste container") || 
+      items.includes("recycling bin") || 
+      items.includes("rubbish bin") || 
+      items.includes("litter bin") || 
+      items.includes("dustbin") || 
+      items.includes("waste basket") || 
+      items.includes("trash container") || 
+      items.includes("trash receptacle") || 
+      items.includes("waste receptacle") || 
+      items.includes("dumpster");
       const hasTrashItem = items.some(item => throwableTrashItems.includes(item));
 
-      if (hasHand && hasTrashBin && hasTrashItem) {
+      if ( hasTrashBin && hasTrashItem) {
         setMessage("✅ Success! You are such a nice man.");
         setTimeout(() => {
           router.push("/");
@@ -71,9 +85,7 @@ export default function Detect() {
         
       } else {
         setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
-        setTimeout(() => {
-            router.push("/");
-          }, 4000);
+       
       }
     };
   };
