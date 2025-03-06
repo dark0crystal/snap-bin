@@ -60,6 +60,7 @@ export default function Detect() {
 
       // Logic to check if conditions are met
       const hasTrashBin = items.includes("trash bin") || 
+      items.includes("toilet") || 
       items.includes("bin") || 
       items.includes("trash can") || 
       items.includes("garbage bin") || 
