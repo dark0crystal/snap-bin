@@ -93,7 +93,14 @@ export default function Detect() {
             <Image src={image} alt="Captured" objectFit="cover" fill className="rounded-lg" />
           </div>
         ) : (
-          <Webcam ref={webcamRef} screenshotFormat="image/png" className="w-full h-auto rounded-lg" />
+            <Webcam
+            ref={webcamRef}
+            screenshotFormat="image/png"
+            className="w-full h-auto rounded-lg"
+            videoConstraints={{
+              facingMode: { exact: "environment" }, // Forces the back camera
+            }}
+          />
         )}
 
         <div className="mt-4 flex gap-4">
@@ -118,16 +125,7 @@ export default function Detect() {
                 )}
               </div>
 
-              {/* Allow user to download image */}
-              {imageBlob && (
-                <a
-                  href={URL.createObjectURL(imageBlob)}
-                  download="captured_image.png"
-                  className="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition"
-                >
-                  Download
-                </a>
-              )}
+             
             </>
           ) : (
             <button
