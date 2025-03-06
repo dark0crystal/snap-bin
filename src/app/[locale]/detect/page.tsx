@@ -5,6 +5,11 @@ import { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
+import {throwableTrashItems} from "../../components/detectableItems"
+import {useRouter} from '@/i18n/navigation';
+ 
+
+ 
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
@@ -14,9 +19,8 @@ export default function Detect() {
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
 
-  // Define throwable trash items
-  const throwableTrashItems = ["bottle", "cup", "can", "plastic bag", "paper", "banana", "apple", "fork", "knife"];
-
+  const router = useRouter();
+ 
   useEffect(() => {
     tf.ready().then(() => {
       console.log("TensorFlow.js is ready.");
@@ -55,14 +59,21 @@ export default function Detect() {
       setLoading(false);
 
       // Logic to check if conditions are met
-      const hasHand = items.includes("hand");
+      const hasHand = items.includes("hand") || items.includes("finger");
       const hasTrashBin = items.includes("trash bin") || items.includes("bin");
       const hasTrashItem = items.some(item => throwableTrashItems.includes(item));
 
       if (hasHand && hasTrashBin && hasTrashItem) {
-        setMessage("✅ Success! You can throw the trash.");
+        setMessage("✅ Success! You are such a nice man.");
+        setTimeout(() => {
+          router.push("/");
+        }, 1000);
+        
       } else {
         setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
+        setTimeout(() => {
+            router.push("/");
+          }, 1000);
       }
     };
   };
