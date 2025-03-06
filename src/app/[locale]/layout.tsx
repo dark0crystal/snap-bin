@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { Inter } from "next/font/google";
+import { Inter, Alexandria, Phudu } from "next/font/google";
 import "./globals.css";
 import {routing} from '@/i18n/routing';
 import {notFound} from 'next/navigation';
@@ -7,7 +7,22 @@ import {NextIntlClientProvider} from 'next-intl';
 import {getMessages} from 'next-intl/server';
 import Navbar from "../components/Navbar";
 
+// Load fonts outside the component to avoid recreation on each render
 const inter = Inter({ subsets: ["latin"] });
+
+const phudu = Phudu({ 
+  subsets: ["latin"], 
+  weight: ["400", "500", "600", "700", "900"],
+  display: 'swap',
+  variable: '--font-phudu'
+});
+
+const alexandriaFont = Alexandria({
+  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  subsets: ["arabic", "latin"],
+  display: 'swap',
+  variable: '--font-alexandria'
+});
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -21,8 +36,7 @@ export default async function RootLayout({
   children: React.ReactNode;
   params: Promise<{locale: string}>;
 }>) {
-
-    // Ensure that the incoming `locale` is valid
+  // Ensure that the incoming `locale` is valid
   const {locale} = await params;
   if (!routing.locales.includes(locale as any)) {
     notFound();
@@ -31,27 +45,20 @@ export default async function RootLayout({
   // Providing all messages to the client
   // side is the easiest way to get started
   const messages = await getMessages();
+  
+  // Choose font based on locale
+  const fontClass = locale === 'ar' ? alexandriaFont.className : phudu.className;
  
   return (
     <html lang={locale}>
-      <body className={`${inter.className} bg-indigo-50`}>
+      <body className={`${fontClass} ${phudu.variable} ${alexandriaFont.variable} bg-indigo-50`}>
           <NextIntlClientProvider messages={messages}>
-            
-            
-             
-              <div className=" mx-[5vw]">
+            <div className="mx-[5vw]">
               <Navbar/>
-                {children}
-              </div>
-              
-
-              
-          
-             
+              {children}
+            </div>
           </NextIntlClientProvider>
       </body>
     </html>
   );
 }
-
-
