@@ -5,11 +5,8 @@ import { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
 import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import {throwableTrashItems} from "../../components/detectableItems"
-import {useRouter} from '@/i18n/navigation';
- 
-
- 
+import { throwableTrashItems } from "../../components/detectableItems";
+import { useRouter } from "@/i18n/navigation";
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
@@ -20,7 +17,7 @@ export default function Detect() {
   const [message, setMessage] = useState<string | null>(null);
 
   const router = useRouter();
- 
+
   useEffect(() => {
     tf.ready().then(() => {
       console.log("TensorFlow.js is ready.");
@@ -33,8 +30,8 @@ export default function Detect() {
       if (screenshot) {
         setImage(screenshot);
         fetch(screenshot)
-          .then(res => res.blob())
-          .then(blob => setImageBlob(blob));
+          .then((res) => res.blob())
+          .then((blob) => setImageBlob(blob));
 
         // Process the image with ML
         await detectObjects(screenshot);
@@ -54,39 +51,40 @@ export default function Detect() {
       const model = await cocoSsd.load();
       const predictions = await model.detect(img);
 
-      const items = predictions.map(prediction => prediction.class);
+      const items = predictions.map((prediction) => prediction.class);
       setDetectedItems(items);
       setLoading(false);
 
       // Logic to check if conditions are met
-      const hasTrashBin = items.includes("trash bin") || 
-      items.includes("toilet") || 
-      items.includes("bin") || 
-      items.includes("trash can") || 
-      items.includes("garbage bin") || 
-      items.includes("garbage can") || 
-      items.includes("waste bin") || 
-      items.includes("waste container") || 
-      items.includes("recycling bin") || 
-      items.includes("rubbish bin") || 
-      items.includes("litter bin") || 
-      items.includes("dustbin") || 
-      items.includes("waste basket") || 
-      items.includes("trash container") || 
-      items.includes("trash receptacle") || 
-      items.includes("waste receptacle") || 
-      items.includes("dumpster");
-      const hasTrashItem = items.some(item => throwableTrashItems.includes(item));
+      const hasTrashBin =
+        items.includes("trash bin") ||
+        items.includes("toilet") ||
+        items.includes("bin") ||
+        items.includes("trash can") ||
+        items.includes("garbage bin") ||
+        items.includes("garbage can") ||
+        items.includes("waste bin") ||
+        items.includes("waste container") ||
+        items.includes("recycling bin") ||
+        items.includes("rubbish bin") ||
+        items.includes("litter bin") ||
+        items.includes("dustbin") ||
+        items.includes("waste basket") ||
+        items.includes("trash container") ||
+        items.includes("trash receptacle") ||
+        items.includes("waste receptacle") ||
+        items.includes("dumpster");
+      const hasTrashItem = items.some((item) =>
+        throwableTrashItems.includes(item)
+      );
 
-      if ( hasTrashBin && hasTrashItem) {
-        setMessage("✅ Success! You are such a nice man.");
+      if (hasTrashBin && hasTrashItem) {
+        setMessage("✅ Success! You are such a nice person.");
         setTimeout(() => {
           router.push("/");
         }, 4000);
-        
       } else {
         setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
-       
       }
     };
   };
@@ -100,28 +98,38 @@ export default function Detect() {
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-amber-200 p-4">
-      <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[90vh] flex flex-col items-center justify-center bg-white rounded-lg shadow-lg p-4">
-        {image ? (
-          <div className="w-full overflow-hidden relative h-[50vh]">
-            <Image src={image} alt="Captured" objectFit="cover" fill className="rounded-lg" />
-          </div>
-        ) : (
+      <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[90vh] flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg p-4 relative overflow-hidden">
+        {/* Camera simulation */}
+        <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex justify-center items-center">
+          {image ? (
+            <div className="w-full overflow-hidden relative h-full">
+              <Image
+                src={image}
+                alt="Captured"
+                objectFit="cover"
+                fill
+                className="rounded-2xl"
+              />
+            </div>
+          ) : (
             <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/png"
-            className="w-full h-auto rounded-lg"
-            videoConstraints={{
-              facingMode: { exact: "environment" }, // Forces the back camera
-            }}
-          />
-        )}
+              ref={webcamRef}
+              screenshotFormat="image/png"
+              className="w-full h-auto rounded-2xl"
+              videoConstraints={{
+                facingMode: { exact: "environment" }, // Forces the back camera
+              }}
+            />
+          )}
+        </div>
 
-        <div className="mt-4 flex gap-4">
+        {/* Buttons and Detected Info */}
+        <div className="mt-4 w-full text-center">
           {image ? (
             <>
               <button
                 onClick={retakePhoto}
-                className="px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition"
+                className="px-6 py-2 bg-red-500 text-white rounded-full w-40 hover:bg-red-600 transition"
               >
                 Retake Photo
               </button>
@@ -133,21 +141,31 @@ export default function Detect() {
                 ) : (
                   <>
                     <p className="text-green-600">Detected: {detectedItems.join(", ")}</p>
-                    {message && <p className="text-xl font-bold mt-2">{message}</p>}
+                    {message && (
+                      <p className="text-xl font-bold mt-2">{message}</p>
+                    )}
                   </>
                 )}
               </div>
-
-             
             </>
           ) : (
             <button
               onClick={capture}
-              className="px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition"
+              className="px-6 py-2 bg-blue-500 text-white rounded-full w-40 hover:bg-blue-600 transition"
             >
               Capture Photo
             </button>
           )}
+        </div>
+
+        {/* Floating rounded capture button */}
+        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
+          <button
+            onClick={capture}
+            className="bg-blue-500 text-white rounded-full w-16 h-16 flex justify-center items-center shadow-lg hover:bg-blue-600 transition"
+          >
+            <span className="text-3xl">📸</span>
+          </button>
         </div>
       </div>
     </div>

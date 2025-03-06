@@ -1,6 +1,6 @@
 import React from 'react'
 import LanguageChange from './LangChange'
-import { getTranslations } from 'next-intl/server'
+
 import { Phudu } from "next/font/google";
 
 const phudu = Phudu({
@@ -13,7 +13,7 @@ const phudu = Phudu({
 
 const Navbar =async () => {
 
-  const t =await getTranslations("navbar");
+
   return (
     <div className='h-[12vh] text-3xl grid grid-cols-2 sm:grid-cols-3 items-center justify-center w-full  '>
       <LanguageChange/>
