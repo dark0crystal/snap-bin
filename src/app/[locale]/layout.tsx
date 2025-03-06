@@ -34,10 +34,20 @@ export default async function RootLayout({
  
   return (
     <html lang={locale}>
-      <body className={inter.className}>
+      <body className={`${inter.className} bg-indigo-50`}>
           <NextIntlClientProvider messages={messages}>
-            <Navbar/>
-             {children}
+            
+            
+             
+              <div className=" mx-[5vw]">
+              <Navbar/>
+                {children}
+              </div>
+              
+
+              
+          
+             
           </NextIntlClientProvider>
       </body>
     </html>
