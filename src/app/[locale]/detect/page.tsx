@@ -1,4 +1,4 @@
-'use client';
+"use client";
 
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
@@ -12,6 +12,10 @@ export default function Detect() {
   const [imageBlob, setImageBlob] = useState<Blob | null>(null);
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<string | null>(null);
+
+  // Define throwable trash items
+  const throwableTrashItems = ["bottle", "cup", "can", "plastic bag", "paper", "banana", "apple", "fork", "knife"];
 
   useEffect(() => {
     tf.ready().then(() => {
@@ -25,7 +29,7 @@ export default function Detect() {
       if (screenshot) {
         setImage(screenshot);
         fetch(screenshot)
-          .then(res => res.blob()) // Convert base64 to Blob
+          .then(res => res.blob())
           .then(blob => setImageBlob(blob));
 
         // Process the image with ML
@@ -36,19 +40,30 @@ export default function Detect() {
 
   const detectObjects = async (imageSrc: string) => {
     setLoading(true);
-    const img = new window.Image(); // Use 'window.Image' to refer to the native Image constructor
+    setMessage(null); // Reset message
 
+    const img = new window.Image();
     img.src = imageSrc;
-    img.crossOrigin = "anonymous"; // Prevent CORS issues
+    img.crossOrigin = "anonymous";
 
     img.onload = async () => {
-      const model = await cocoSsd.load(); // Load COCO-SSD model
-      const predictions = await model.detect(img); // Run detection
+      const model = await cocoSsd.load();
+      const predictions = await model.detect(img);
 
-      // Extract object names
       const items = predictions.map(prediction => prediction.class);
       setDetectedItems(items);
       setLoading(false);
+
+      // Logic to check if conditions are met
+      const hasHand = items.includes("hand");
+      const hasTrashBin = items.includes("trash bin") || items.includes("bin");
+      const hasTrashItem = items.some(item => throwableTrashItems.includes(item));
+
+      if (hasHand && hasTrashBin && hasTrashItem) {
+        setMessage("✅ Success! You can throw the trash.");
+      } else {
+        setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
+      }
     };
   };
 
@@ -56,23 +71,18 @@ export default function Detect() {
     setImage(null);
     setImageBlob(null);
     setDetectedItems([]);
+    setMessage(null);
   };
 
   return (
     <div className="flex flex-col items-center justify-center min-h-screen bg-amber-200 p-4">
       <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[90vh] flex flex-col items-center justify-center bg-white rounded-lg shadow-lg p-4">
         {image ? (
-          // Display captured image
           <div className="w-full overflow-hidden relative h-[80vh]">
             <Image src={image} alt="Captured" objectFit="cover" fill className="rounded-lg" />
           </div>
         ) : (
-          // Show webcam feed
-          <Webcam
-            ref={webcamRef}
-            screenshotFormat="image/png"
-            className="w-full h-auto rounded-lg"
-          />
+          <Webcam ref={webcamRef} screenshotFormat="image/png" className="w-full h-auto rounded-lg" />
         )}
 
         <div className="mt-4 flex gap-4">
@@ -90,11 +100,10 @@ export default function Detect() {
                 {loading ? (
                   <p className="text-gray-600">Processing image...</p>
                 ) : (
-                  detectedItems.length > 0 ? (
+                  <>
                     <p className="text-green-600">Detected: {detectedItems.join(", ")}</p>
-                  ) : (
-                    <p className="text-gray-600">No objects detected.</p>
-                  )
+                    {message && <p className="text-xl font-bold mt-2">{message}</p>}
+                  </>
                 )}
               </div>
 
