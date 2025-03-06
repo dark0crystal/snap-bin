@@ -48,10 +48,17 @@ export default async function RootLayout({
   
   // Choose font based on locale
   const fontClass = locale === 'ar' ? alexandriaFont.className : phudu.className;
+
+  let direction ="";
+  if(locale == "ar"){
+    direction ="rtl"
+  }else{
+    direction ="ltr"
+  }
  
   return (
-    <html lang={locale}>
-      <body className={`${fontClass} ${phudu.variable} ${alexandriaFont.variable} bg-indigo-50`}>
+    <html lang={locale} dir={direction}>
+      <body className={`${fontClass} ${phudu.variable} ${alexandriaFont.variable} bg-white`}>
           <NextIntlClientProvider messages={messages}>
             <div className="mx-[5vw]">
               <Navbar/>
