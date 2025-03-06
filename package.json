@@ -12,6 +12,7 @@
     "@tailwindcss/postcss": "^4.0.9",
     "@tensorflow-models/coco-ssd": "^2.2.3",
     "@tensorflow/tfjs": "^4.22.0",
+    "framer-motion": "^12.4.10",
     "next": "14.2.5",
     "next-intl": "^3.26.5",
     "react": "^18",
