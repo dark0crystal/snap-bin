@@ -8,14 +8,11 @@ export default function HomePage() {
     <div className='h-fit flex flex-col items-center '>
       <div className='h-[70vh]  border-x border-gray-300 w-full'>
         <h1 className='bg-white text-2xl m-2'>{t('title')}</h1>
-        <Link href="/about">{t('about')}</Link>
-      </div>
-      {/* black rounded section  */}
-      <div className=' rounded-4xl bg-black h-[120vh] w-full'>
+        <div className='bg-amber-200 rounded-3xl p-2 w-fit'>
+          <Link className='text-3xl ' href="/detect">{t('detect')}</Link>
+        </div>
         
-
       </div>
-     
     </div>
   );
 }
