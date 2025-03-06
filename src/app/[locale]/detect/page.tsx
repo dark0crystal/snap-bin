@@ -67,13 +67,13 @@ export default function Detect() {
         setMessage("✅ Success! You are such a nice man.");
         setTimeout(() => {
           router.push("/");
-        }, 1000);
+        }, 4000);
         
       } else {
         setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
         setTimeout(() => {
             router.push("/");
-          }, 1000);
+          }, 4000);
       }
     };
   };
@@ -89,7 +89,7 @@ export default function Detect() {
     <div className="flex flex-col items-center justify-center min-h-screen bg-amber-200 p-4">
       <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[90vh] flex flex-col items-center justify-center bg-white rounded-lg shadow-lg p-4">
         {image ? (
-          <div className="w-full overflow-hidden relative h-[80vh]">
+          <div className="w-full overflow-hidden relative h-[50vh]">
             <Image src={image} alt="Captured" objectFit="cover" fill className="rounded-lg" />
           </div>
         ) : (
