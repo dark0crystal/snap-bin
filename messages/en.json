@@ -1,6 +1,8 @@
 {
-    "HomePage": {
-      "title": "Hello world!",
-      "detect": "start"
-    }
+  "HomePage": {
+    "snap": "snap",
+    "earn":"Earn",
+    "title":"Keeping the environment clean deserves a reward!",
+    "detect": "start"
   }
+}
