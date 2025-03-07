@@ -7,6 +7,7 @@ import * as tf from "@tensorflow/tfjs";
 import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { throwableTrashItems } from "../../components/detectableItems";
 import { useRouter } from "@/i18n/navigation";
+import { useTranslations } from "next-intl";
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
@@ -15,6 +16,8 @@ export default function Detect() {
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+
+  const t= useTranslations("detect")
 
   const router = useRouter();
 
@@ -80,12 +83,12 @@ export default function Detect() {
       );
 
       if (hasTrashBin && hasTrashItem) {
-        setMessage("✅ Success! You are such a nice person.");
+        setMessage(t("success"));
         setTimeout(() => {
           router.push("/");
         }, 4000);
       } else {
-        setMessage("❌ Keep trying! Make sure you're holding trash near a bin.");
+        setMessage(t("fail"));
       }
     };
   };
