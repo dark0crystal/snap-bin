@@ -3,6 +3,8 @@
     "snap": "snap",
     "earn":"Earn",
     "title":"Keeping the environment clean deserves a reward!",
-    "detect": "start"
+    "detect": "start",
+    "loading":"Loading..."
+
   }
 }
