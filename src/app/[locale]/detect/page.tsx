@@ -8,6 +8,9 @@ import * as cocoSsd from "@tensorflow-models/coco-ssd";
 import { throwableTrashItems } from "../../components/detectableItems";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
+import styles from "./bar.module.css"
+
+
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
@@ -108,14 +111,17 @@ export default function Detect() {
           {image ? (
             // captured image section 
             <div className="w-full overflow-hidden relative h-full">
-              <Image
-                src={image}
-                alt="Captured"
-                objectFit="cover"
-                fill
-                className="rounded-2xl"
-              />
-            </div>
+            <Image
+              src={image}
+              alt="Captured"
+              objectFit="cover"
+              fill
+              className="rounded-2xl"
+            />
+            {/* Scanning Bar */}
+            <div className={`${styles.animatescan} absolute top-0 left-0 w-full h-[4px] bg-green-500 `}></div>
+          </div>
+          
           ) : (
             <Webcam
               ref={webcamRef}

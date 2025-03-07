@@ -1,0 +1,13 @@
+@keyframes scan {
+    0% {
+      top: 0;
+    }
+    100% {
+      top: 100%;
+    }
+  }
+  
+  .animatescan {
+    animation: scan 2s linear infinite alternate;
+  }
+  
