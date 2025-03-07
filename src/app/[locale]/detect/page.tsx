@@ -97,7 +97,7 @@ export default function Detect() {
   };
 
   return (
-    <div className="flex flex-col items-center  h-[88vh]  rounded-3xl p-4">
+    <div className="flex flex-col items-center  max-h-[88vh]  rounded-3xl p-4">
       <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[80vh] flex flex-col items-center justify-center  relative overflow-hidden">
         {/* Camera simulation */}
         <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex justify-center items-center">
@@ -149,24 +149,18 @@ export default function Detect() {
               </div>
             </>
           ) : (
+          <div className="flex justify-center items-center">
             <button
               onClick={capture}
-              className="px-6 py-2 bg-blue-500 text-white rounded-full w-40 hover:bg-blue-600 transition"
+              className="bg-blue-500 text-white rounded-full w-16 h-16 flex justify-center items-center shadow-lg hover:bg-blue-600 transition"
             >
-              Capture Photo
+              <span className="text-3xl">📸</span>
             </button>
+          </div>
           )}
         </div>
 
-        {/* Floating rounded capture button */}
-        <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2">
-          <button
-            onClick={capture}
-            className="bg-blue-500 text-white rounded-full w-16 h-16 flex justify-center items-center shadow-lg hover:bg-blue-600 transition"
-          >
-            <span className="text-3xl">📸</span>
-          </button>
-        </div>
+       
       </div>
     </div>
   );
