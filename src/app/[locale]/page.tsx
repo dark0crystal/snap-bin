@@ -3,6 +3,7 @@
 import { useTranslations } from "next-intl";
 import { Link } from "@/i18n/navigation";
 import { Phudu } from "next/font/google";
+import FunnyButton from "../components/FunnyButton";
 
 const phudu = Phudu({
   subsets: ["latin"],
@@ -56,16 +57,17 @@ export default function HomePage() {
         </div>
 
         {/* Title */}
-        <h1 className="text-white text-lg sm:text-xl md:text-xl font-bold m-2 p-2 rounded-lg md:mt-10">
+        <h1 className="text-white text-lg sm:text-xl md:text-xl font-bold m-2 p-2 rounded-lg md:mt-10 text-center">
           {t("title")}
         </h1>
 
         {/* Detect Button */}
-        <div className="bg-amber-200 rounded-3xl px-4 py-2 w-fit">
-          <Link className="text-lg sm:text-2xl md:text-4xl font-semibold" href="/detect">
+        {/* <div className="bg-amber-200 rounded-3xl px-4 py-2 w-fit">
+          <Link className="text-lg sm:text-2xl md:text-4xl font-semibold text-[#f9f5ec] " href="/detect">
             {t("detect")}
           </Link>
-        </div>
+        </div> */}
+        <FunnyButton/>
 
          {/* Bottom Left SVG Line */}
       <svg
@@ -92,3 +94,11 @@ export default function HomePage() {
     </div>
   );
 }
+
+// #f8fe23 green
+
+// #7546ff purple
+
+// #131313 black
+
+// #f9f5ec near to white
