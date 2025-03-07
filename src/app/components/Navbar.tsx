@@ -16,7 +16,7 @@ const Navbar =async () => {
 
 
   return (
-    <div className='h-[12vh] text-3xl grid grid-cols-2 sm:grid-cols-3 items-center justify-center w-full  '>
+    <div className='h-[10vh] md:h-[12vh] text-3xl grid grid-cols-2 sm:grid-cols-3 items-center justify-center w-full  '>
       <LanguageChange/>
       <div className='flex items-center justify-center w-full '>
         <Link href="/" className={`${phudu.className} font-semibold text-3xl sm:text-4xl`}>SNAP BIN</Link>

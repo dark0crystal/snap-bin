@@ -100,8 +100,9 @@ export default function Detect() {
     <div className="flex flex-col items-center  max-h-[88vh]  rounded-3xl p-4">
       <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[80vh] flex flex-col items-center justify-center  relative overflow-hidden">
         {/* Camera simulation */}
-        <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex justify-center items-center">
+        <div className="w-full h-[80vh] rounded-2xl overflow-hidden bg-black flex justify-center items-center">
           {image ? (
+            // captured image section 
             <div className="w-full overflow-hidden relative h-full">
               <Image
                 src={image}
