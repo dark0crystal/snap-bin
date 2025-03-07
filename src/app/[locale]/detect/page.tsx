@@ -97,8 +97,8 @@ export default function Detect() {
   };
 
   return (
-    <div className="flex flex-col items-center justify-center min-h-screen bg-amber-200 p-4">
-      <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[90vh] flex flex-col items-center justify-center bg-white rounded-3xl shadow-lg p-4 relative overflow-hidden">
+    <div className="flex flex-col items-center  h-[88vh]  rounded-3xl p-4">
+      <div className="w-[90vw] md:w-[80vw] lg:w-[50vw] h-[80vh] flex flex-col items-center justify-center  relative overflow-hidden">
         {/* Camera simulation */}
         <div className="w-full h-full rounded-2xl overflow-hidden bg-black flex justify-center items-center">
           {image ? (
@@ -115,7 +115,7 @@ export default function Detect() {
             <Webcam
               ref={webcamRef}
               screenshotFormat="image/png"
-              className="w-full h-auto rounded-2xl"
+              className="w-full h-full rounded-2xl"
               videoConstraints={{
                 facingMode: { exact: "environment" }, // Forces the back camera
               }}
