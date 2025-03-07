@@ -118,8 +118,10 @@ export default function Detect() {
               fill
               className="rounded-2xl"
             />
-            {/* Scanning Bar */}
+       
+            {loading? (
             <div className={`${styles.animatescan} absolute top-0 left-0 w-full h-[4px] bg-green-500 `}></div>
+            ):(<></>)}
           </div>
           
           ) : (
