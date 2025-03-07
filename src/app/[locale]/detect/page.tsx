@@ -59,6 +59,7 @@ export default function Detect() {
       const hasTrashBin =
         items.includes("trash bin") ||
         items.includes("toilet") ||
+        items.includes("cup") ||//remove after test
         items.includes("bin") ||
         items.includes("trash can") ||
         items.includes("garbage bin") ||
