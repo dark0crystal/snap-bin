@@ -3,14 +3,10 @@
 import Image from "next/image";
 import { useRef, useState, useEffect } from "react";
 import Webcam from "react-webcam";
-import * as tf from "@tensorflow/tfjs";
-import * as cocoSsd from "@tensorflow-models/coco-ssd";
-import { throwableTrashItems } from "../../components/detectableItems";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import styles from "./bar.module.css"
-
-
+import { throwableTrashItems } from "../../components/detectableItems";
 
 export default function Detect() {
   const webcamRef = useRef<Webcam>(null);
@@ -19,16 +15,10 @@ export default function Detect() {
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [result, setResult] = useState<any>(null);
 
-  const t= useTranslations("detect")
-
+  const t = useTranslations("detect")
   const router = useRouter();
-
-  useEffect(() => {
-    tf.ready().then(() => {
-      console.log("TensorFlow.js is ready.");
-    });
-  }, []);
 
   const capture = async () => {
     if (webcamRef.current) {
@@ -39,7 +29,6 @@ export default function Detect() {
           .then((res) => res.blob())
           .then((blob) => setImageBlob(blob));
 
-        // Process the image with ML
         await detectObjects(screenshot);
       }
     }
@@ -47,41 +36,36 @@ export default function Detect() {
 
   const detectObjects = async (imageSrc: string) => {
     setLoading(true);
-    setMessage(null); // Reset message
+    setMessage(null);
 
-    const img = new window.Image();
-    img.src = imageSrc;
-    img.crossOrigin = "anonymous";
+    try {
+      // Convert base64 to blob
+      const response = await fetch(imageSrc);
+      const blob = await response.blob();
 
-    img.onload = async () => {
-      const model = await cocoSsd.load();
-      const predictions = await model.detect(img);
+      // Create form data
+      const formData = new FormData();
+      formData.append('image', blob);
 
-      const items = predictions.map((prediction) => prediction.class);
+      // Call local YOLO model
+      const result = await fetch('/api/detect', {
+        method: 'POST',
+        body: formData
+      });
+
+      const data = await result.json();
+      
+      // Extract detected classes from predictions
+      const items: string[] = data.data.map((pred: {class: string}) => pred.class);
       setDetectedItems(items);
-      setLoading(false);
 
-      // Logic to check if conditions are met
-      const hasTrashBin =
-        items.includes("trash bin") ||
-        items.includes("toilet") ||
-        items.includes("cup") ||//remove after test
-        items.includes("bin") ||
-        items.includes("trash can") ||
-        items.includes("garbage bin") ||
-        items.includes("garbage can") ||
-        items.includes("waste bin") ||
-        items.includes("waste container") ||
-        items.includes("recycling bin") ||
-        items.includes("rubbish bin") ||
-        items.includes("litter bin") ||
-        items.includes("dustbin") ||
-        items.includes("waste basket") ||
-        items.includes("trash container") ||
-        items.includes("trash receptacle") ||
-        items.includes("waste receptacle") ||
-        items.includes("dumpster");
-      const hasTrashItem = items.some((item) =>
+      // Check for trash bin and trash items
+      const hasTrashBin = items.some((item: string) => [
+        'trash bin', 'bin', 'garbage bin', 'waste bin',
+        'recycling bin', 'rubbish bin', 'dumpster'
+      ].includes(item.toLowerCase()));
+
+      const hasTrashItem = items.some((item: string) =>
         throwableTrashItems.includes(item)
       );
 
@@ -93,7 +77,15 @@ export default function Detect() {
       } else {
         setMessage(t("fail"));
       }
-    };
+
+      setResult(data);
+
+    } catch (error) {
+      console.error('Error detecting objects:', error);
+      setMessage('Error processing image');
+    } finally {
+      setLoading(false);
+    }
   };
 
   const retakePhoto = () => {
@@ -173,7 +165,12 @@ export default function Detect() {
           )}
         </div>
 
-       
+        {result && (
+          <div className={styles.result}>
+            <h2>Results:</h2>
+            <pre>{JSON.stringify(result, null, 2)}</pre>
+          </div>
+        )}
       </div>
     </div>
   );
