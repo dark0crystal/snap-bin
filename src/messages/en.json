@@ -1,0 +1,13 @@
+{
+  "rewards": {
+    "rewardsTitle": "Your Recycling Rewards",
+    "totalPoints": "Total Points",
+    "rewardsCount": "You have earned rewards {count} times",
+    "rewardEarned": "Reward Earned",
+    "points": "pts",
+    "itemsRecycled": "Items Recycled",
+    "backToHome": "Back to Home",
+    "noRewardsYet": "No Rewards Yet",
+    "startRecycling": "Start recycling to earn rewards!"
+  }
+} 

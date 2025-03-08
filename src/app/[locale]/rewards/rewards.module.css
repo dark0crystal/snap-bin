@@ -1,0 +1,30 @@
+.rewardCard {
+  transition: transform 0.2s ease-in-out;
+}
+
+.rewardCard:hover {
+  transform: translateY(-5px);
+}
+
+.pointsBadge {
+  background: linear-gradient(135deg, #4ade80 0%, #22c55e 100%);
+}
+
+.confetti {
+  position: fixed;
+  width: 10px;
+  height: 10px;
+  background-color: #f59e0b;
+  animation: confetti 5s ease-in-out infinite;
+}
+
+@keyframes confetti {
+  0% {
+    transform: translateY(0) rotate(0deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(100vh) rotate(720deg);
+    opacity: 0;
+  }
+} 

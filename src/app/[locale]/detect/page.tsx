@@ -19,6 +19,7 @@ export default function Detect() {
   const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState<string | null>(null);
+  const [userIP, setUserIP] = useState<string>("");
 
   const t= useTranslations("detect")
 
@@ -28,6 +29,12 @@ export default function Detect() {
     tf.ready().then(() => {
       console.log("TensorFlow.js is ready.");
     });
+    
+    // Fetch user IP
+    fetch('https://api.ipify.org?format=json')
+      .then(response => response.json())
+      .then(data => setUserIP(data.ip))
+      .catch(error => console.error('Error fetching IP:', error));
   }, []);
 
   const capture = async () => {
@@ -87,11 +94,26 @@ export default function Detect() {
 
       if (hasTrashBin && hasTrashItem) {
         setMessage(t("success"));
+        
+        // Save reward to localStorage with timestamp and IP
+        const reward = {
+          date: new Date().toISOString(),
+          ip: userIP,
+          items: items.filter(item => throwableTrashItems.includes(item))
+        };
+        
+        // Get existing rewards or initialize empty array
+        const existingRewards = JSON.parse(localStorage.getItem('trashRewards') || '[]');
+        existingRewards.push(reward);
+        localStorage.setItem('trashRewards', JSON.stringify(existingRewards));
+        
+        // Navigate to rewards dashboard
         setTimeout(() => {
-          router.push("/");
-        }, 4000);
+          router.push("/rewards");
+        }, 3000);
       } else {
         setMessage(t("fail"));
+        // Don't navigate on failure
       }
     };
   };
