@@ -9,7 +9,8 @@
   },
   "detect": {
       "success": "✅ Success! You are such a nice person.",
-      "fail": "❌ Keep trying! Make sure you're holding trash near a bin."
+      "fail": "❌ Keep trying! Make sure you're holding trash near a bin.",
+      "retake":"Retake Photo"
     },
     "rewards": {
     "rewardsTitle": "Your Recycling Rewards",
