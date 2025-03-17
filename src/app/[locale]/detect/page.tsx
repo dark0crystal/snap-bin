@@ -30,7 +30,7 @@ const TRASH_CONTAINERS = [
 ];
 
 // Define your message categories
-const MESSAGES = {
+const MESSAGES: Record<string, string[]> = {
   both: [
     "Great job recycling! You're helping keep our environment clean.",
     "Thank you for disposing of waste properly! Every small action counts.",
@@ -66,20 +66,20 @@ const MESSAGES = {
 };
 
 export default function Detect() {
-  const webcamRef = useRef(null);
-  const [image, setImage] = useState(null);
-  const [imageBlob, setImageBlob] = useState(null);
-  const [detectedItems, setDetectedItems] = useState([]);
+  const webcamRef = useRef<Webcam | null>(null);
+  const [image, setImage] = useState<string | null>(null);
+  const [imageBlob, setImageBlob] = useState<Blob | null>(null);
+  const [detectedItems, setDetectedItems] = useState<string[]>([]);
   const [loading, setLoading] = useState(false);
-  const [message, setMessage] = useState(null);
+  const [message, setMessage] = useState<string | null>(null);
   const [userIP, setUserIP] = useState("");
-  const [model, setModel] = useState(null);
+  const [model, setModel] = useState<tf.GraphModel | null>(null);
 
   const t = useTranslations("detect");
   const router = useRouter();
 
   // Get a random message from a category
-  function getRandomMessage(category) {
+  function getRandomMessage(category: keyof typeof MESSAGES) {
     const messages = MESSAGES[category];
     return messages[Math.floor(Math.random() * messages.length)];
   }
@@ -124,13 +124,13 @@ export default function Detect() {
     }
   };
 
-  const preprocessImage = async (imageSrc) => {
+  const preprocessImage = async (imageSrc: string): Promise<tf.Tensor> => {
     return new Promise((resolve) => {
       const img = new window.Image();
       img.src = imageSrc;
       img.crossOrigin = "anonymous";
-      
-      img.onload = () => {
+  
+      img.onload = () => { 
         // Create a tensor from the image and resize to 640x640 for YOLOv12
         const tensor = tf.browser.fromPixels(img)
           .resizeNearestNeighbor([640, 640])
@@ -142,54 +142,82 @@ export default function Detect() {
       };
     });
   };
+  
 
-  const detectObjects = async (imageSrc) => {
+  const detectObjects = async (imageSrc: string) => {
     setLoading(true);
     setMessage(null); // Reset message
-
+  
     if (!model) {
       console.error("Model not loaded");
       setLoading(false);
       setMessage("Error: Model not loaded");
       return;
     }
-
+  
     try {
       // Preprocess the image
       const tensor = await preprocessImage(imageSrc);
       
       // Run inference
-      const predictions = await model.executeAsync(tensor);
+      const predictions = await model.executeAsync(tensor) as tf.Tensor[];
+
+      // Ensure correct array access
+      const bboxes = predictions[0] as tf.Tensor;
+      const scores = predictions[1] as tf.Tensor;
+      const classes = predictions[2] as tf.Tensor;
       
-      // Process the predictions (this will depend on your model's output format)
-      // For a standard YOLOv12 model, outputs might be [bboxes, scores, classes]
-      const boxes = await predictions[0].array();
-      const scores = await predictions[1].array();
-      const classes = await predictions[2].array();
-      
-      // Get detected classes above a threshold
-      const items = [];
-      const threshold = 0.5;
-      
-      for (let i = 0; i < scores[0].length; i++) {
-        if (scores[0][i] > threshold) {
-          const className = CLASSES[classes[0][i]];
-          items.push(className);
-        }
-      }
-      
-      // Clean up tensors
+      // Convert tensors to arrays
+// Convert tensors to JavaScript arrays
+const boxesArr = await predictions[0].array();
+const scoresArr = await predictions[1].array();
+const classesArr = await predictions[2].array();
+
+// Ensure scoresArr and classesArr are arrays of numbers (for example)
+let flatScores: number[] = [];
+let flatClasses: number[] = [];
+
+if (Array.isArray(scoresArr)) {
+  flatScores = scoresArr.flat(Infinity) as number[];
+}
+
+if (Array.isArray(classesArr)) {
+  flatClasses = classesArr.flat(Infinity) as number[];
+}
+
+const threshold = 0.5;
+const items: string[] = [];
+const CLASSES = ["Class1", "Class2", "Class3"];  // Example class names
+
+if (!flatScores || !flatClasses || flatScores.length !== flatClasses.length) {
+  console.error("Unexpected model output format.");
+  return;
+}
+
+for (let i = 0; i < flatScores.length; i++) {
+  if (flatScores[i] > threshold) {
+    const classIndex = flatClasses[i];
+    if (classIndex >= 0 && classIndex < CLASSES.length) {
+      const className = CLASSES[classIndex];
+      items.push(className);
+    } else {
+      console.error(`Invalid class index: ${classIndex} at position ${i}.`);
+    }
+  }
+}
+
+
+  
       tensor.dispose();
       predictions.forEach(t => t.dispose());
-      
+  
       setDetectedItems(items);
-      
+  
       // Check for categories
       const hasGarbageItem = items.some(item => GARBAGE_ITEMS.includes(item));
       const hasTrashContainer = items.some(item => TRASH_CONTAINERS.includes(item));
-      
-      // Determine message category
-      let messageCategory;
+  
+      let messageCategory: keyof typeof MESSAGES;
       if (hasGarbageItem && hasTrashContainer) {
         messageCategory = 'both';
       } else if (hasGarbageItem) {
@@ -199,25 +227,20 @@ export default function Detect() {
       } else {
         messageCategory = 'neither';
       }
-      
-      // Set appropriate message
+  
       setMessage(getRandomMessage(messageCategory));
-      
-      // Only navigate to rewards if both items are detected
+  
       if (messageCategory === 'both') {
-        // Save reward to localStorage with timestamp and IP
         const reward = {
           date: new Date().toISOString(),
           ip: userIP,
           items: items.filter(item => GARBAGE_ITEMS.includes(item))
         };
-        
-        // Get existing rewards or initialize empty array
+  
         const existingRewards = JSON.parse(localStorage.getItem('trashRewards') || '[]');
         existingRewards.push(reward);
         localStorage.setItem('trashRewards', JSON.stringify(existingRewards));
-        
-        // Navigate to rewards dashboard after a short delay
+  
         setTimeout(() => {
           router.push("/rewards");
         }, 3000);
@@ -226,9 +249,10 @@ export default function Detect() {
       console.error("Error during detection:", error);
       setMessage("Error processing image.");
     }
-    
+  
     setLoading(false);
   };
+  
 
   const retakePhoto = () => {
     setImage(null);
