@@ -7,6 +7,7 @@ import * as tf from "@tensorflow/tfjs";
 import { useRouter } from "@/i18n/navigation";
 import { useTranslations } from "next-intl";
 import styles from "./bar.module.css"
+import test from "../../../../public/test.jpeg"
 
 // Define your custom classes
 const CLASSES = [
@@ -269,7 +270,7 @@ for (let i = 0; i < flatScores.length; i++) {
             // Captured image section 
             <div className="w-full overflow-hidden relative h-full">
               <Image
-                src={image}
+                src={test}
                 alt="Captured"
                 objectFit="cover"
                 fill
