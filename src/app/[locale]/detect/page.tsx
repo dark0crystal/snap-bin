@@ -187,7 +187,6 @@ if (Array.isArray(classesArr)) {
 
 const threshold = 0.5;
 const items: string[] = [];
-const CLASSES = ["Class1", "Class2", "Class3"];  // Example class names
 
 if (!flatScores || !flatClasses || flatScores.length !== flatClasses.length) {
   console.error("Unexpected model output format.");
