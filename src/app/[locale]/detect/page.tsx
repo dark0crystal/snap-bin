@@ -64,7 +64,7 @@ const MESSAGES: Record<string, string[]> = {
     "Nothing to recycle here. Keep looking for waste items or bins."
   ]
 };
-
+//remove
 export default function Detect() {
   const webcamRef = useRef<Webcam | null>(null);
   const [image, setImage] = useState<string | null>(null);
