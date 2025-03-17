@@ -92,7 +92,7 @@ export default function Detect() {
       
       // Load your custom YOLOv12 model
       try {
-        const loadedModel = await tf.loadGraphModel('/model/model.json');
+        const loadedModel = await tf.loadGraphModel('/web_model/model.json');
         setModel(loadedModel);
         console.log("YOLOv12 model loaded successfully");
       } catch (error) {
