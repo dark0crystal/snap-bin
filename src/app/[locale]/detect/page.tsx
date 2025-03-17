@@ -125,20 +125,28 @@ export default function Detect() {
   };
 
   const preprocessImage = async (imageSrc: string): Promise<tf.Tensor> => {
-    return new Promise((resolve) => {
+    return new Promise((resolve, reject) => {
       const img = new window.Image();
       img.src = imageSrc;
       img.crossOrigin = "anonymous";
   
       img.onload = () => { 
-        // Create a tensor from the image and resize to 640x640 for YOLOv12
-        const tensor = tf.browser.fromPixels(img)
-          .resizeNearestNeighbor([640, 640])
-          .expandDims(0)
-          .toFloat()
-          .div(255.0); // Normalize to 0-1
-        
-        resolve(tensor);
+        try {
+          // Create a tensor from the image and resize to 640x640 for YOLOv12
+          const tensor = tf.browser.fromPixels(img)
+            .resizeNearestNeighbor([640, 640])
+            .expandDims(0)
+            .toFloat()
+            .div(255.0); // Normalize to 0-1
+          
+          resolve(tensor);
+        } catch (error) {
+          reject(error);
+        }
+      };
+      
+      img.onerror = (error) => {
+        reject(new Error("Failed to load image"));
       };
     });
   };
@@ -162,51 +170,53 @@ export default function Detect() {
       // Run inference
       const predictions = await model.executeAsync(tensor) as tf.Tensor[];
 
-      // Ensure correct array access
-      const bboxes = predictions[0] as tf.Tensor;
-      const scores = predictions[1] as tf.Tensor;
-      const classes = predictions[2] as tf.Tensor;
+      // Process predictions safely
+      const items: string[] = [];
       
-      // Convert tensors to arrays
-// Convert tensors to JavaScript arrays
-const boxesArr = await predictions[0].array();
-const scoresArr = await predictions[1].array();
-const classesArr = await predictions[2].array();
-
-// Ensure scoresArr and classesArr are arrays of numbers (for example)
-let flatScores: number[] = [];
-let flatClasses: number[] = [];
-
-if (Array.isArray(scoresArr)) {
-  flatScores = scoresArr.flat(Infinity) as number[];
-}
-
-if (Array.isArray(classesArr)) {
-  flatClasses = classesArr.flat(Infinity) as number[];
-}
-
-const threshold = 0.5;
-const items: string[] = [];
-
-if (!flatScores || !flatClasses || flatScores.length !== flatClasses.length) {
-  console.error("Unexpected model output format.");
-  return;
-}
-
-for (let i = 0; i < flatScores.length; i++) {
-  if (flatScores[i] > threshold) {
-    const classIndex = flatClasses[i];
-    if (classIndex >= 0 && classIndex < CLASSES.length) {
-      const className = CLASSES[classIndex];
-      items.push(className);
-    } else {
-      console.error(`Invalid class index: ${classIndex} at position ${i}.`);
-    }
-  }
-}
-
-
+      try {
+        // Extract data from tensors
+        const boxesArr = await predictions[0].array();
+        const scoresArr = await predictions[1].array();
+        const classesArr = await predictions[2].array();
+        
+        // Flatten arrays safely
+        let flatScores: number[] = [];
+        let flatClasses: number[] = [];
+        
+        if (Array.isArray(scoresArr) && scoresArr.length > 0) {
+          flatScores = Array.isArray(scoresArr[0]) 
+            ? scoresArr[0] as number[] 
+            : [scoresArr[0] as number];
+        }
+        
+        if (Array.isArray(classesArr) && classesArr.length > 0) {
+          flatClasses = Array.isArray(classesArr[0]) 
+            ? classesArr[0] as number[] 
+            : [classesArr[0] as number];
+        }
+        
+        const threshold = 0.5;
+        
+        if (flatScores.length === flatClasses.length) {
+          for (let i = 0; i < flatScores.length; i++) {
+            if (flatScores[i] > threshold) {
+              const classIndex = Math.round(flatClasses[i]);
+              if (classIndex >= 0 && classIndex < CLASSES.length) {
+                const className = CLASSES[classIndex];
+                items.push(className);
+              } else {
+                console.error(`Invalid class index: ${classIndex} at position ${i}.`);
+              }
+            }
+          }
+        } else {
+          console.error("Score and class arrays have different lengths");
+        }
+      } catch (error) {
+        console.error("Error processing prediction tensors:", error);
+      }
   
+      // Clean up tensors to prevent memory leaks
       tensor.dispose();
       predictions.forEach(t => t.dispose());
   
@@ -246,10 +256,10 @@ for (let i = 0; i < flatScores.length; i++) {
       }
     } catch (error) {
       console.error("Error during detection:", error);
-      setMessage("Error processing image.");
+      setMessage(t("fail") || "Error processing image.");
+    } finally {
+      setLoading(false);
     }
-  
-    setLoading(false);
   };
   
 
